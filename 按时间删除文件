@@ -1,0 +1,16 @@
+import os
+import time
+
+dir_path = r"E:\GJP\Backup"
+days = 30
+
+def clean_files(dir_path, days):
+    time_in_seconds = time.time() - days * 86400
+    for root, dirs, files in os.walk(dir_path):
+        for file in files:
+            file_path = os.path.join(root, file)
+            last_modified_time = os.path.getmtime(file_path)
+            if time_in_seconds > last_modified_time:
+                os.remove(file_path)
+                print(f'Deleted File: {file_path}')
+clean_files(r"E:\GJP\Backup",days)
