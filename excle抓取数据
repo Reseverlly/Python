@@ -1,0 +1,45 @@
+# coding: utf-8
+from openpyxl import load_workbook, Workbook
+
+# 数据所在的文件夹目录
+path = 'D:\Desktop'
+# 打开数据工作簿
+workbook = load_workbook(path + '/' + '1.xlsx')
+# 打开工作表
+sheet = workbook.active
+buy_mount = sheet['A']
+# row_lst = []
+ws=workbook.active
+'''list1=['0.1','0.2','0.3','0.4','0.5','0.6','0.7','0.8','0.9','1','2','3','4','5','6','7','8','9','10','15','20','25']'''
+list1=[0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,2,3,4,5,6,7,8,9,10,15,20,25]
+column = 1
+new_workbook = Workbook()
+new_sheet = new_workbook.active
+for a in list1:
+    print(a)
+    row_lst=[]
+    for cell in buy_mount:
+        '''a=float()'''
+        '''print(a)'''
+        lin=a+(a*0.03)
+        lon=a-(a*0.03)
+        if isinstance(cell.value, float) and cell.value <= lin and cell.value >= lon :
+            '''print(cell.row)'''
+            row_lst.append(cell.row)
+    '''  # 创建和原数据 一样的表头（第一行）
+    header = sheet[1]
+    header_lst = []
+    for cell in header:
+        header_lst.append(cell.value)
+    new_sheet.append(header_lst)'''
+    # 从旧表中根据行号提取符合条件的行，并遍历单元格获取值，以列表形式写入新表
+    i = 1
+    for row in row_lst[250:350]:
+        data_lst = []
+        for cell in sheet[row]:
+            data_lst.append(cell.value)
+        new_sheet.cell(row=i, column = column, value = data_lst[0])
+        i = i + 1
+    column = column + 1
+new_workbook.save(path+ '/TEST' + ".xlsx")
+'''# 最后切记保存 new_workbook.save(path + '/' + '符合筛选条件的新表.xlsx')'''
