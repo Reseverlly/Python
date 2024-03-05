@@ -1,0 +1,125 @@
+import numpy as np
+#from matplotlib import pyplot as plt
+#from mpl_toolkits.mplot3d import Axes3D
+import numpy, csv
+from matplotlib import pyplot as plt
+
+
+def readTxt(fileName):
+    data = numpy.zeros([29, 42])  # 暂时固定
+    with open(fileName, encoding='utf-8') as file:
+        reader = csv.reader(file)
+        i = 0
+        for row in reader:
+            temp_str = ''.join(('%s' % id for id in row))
+            temp = temp_str.split()
+            for j in range(0, len(temp)):
+                data[i][j] = float(temp[j])
+            i = i + 1
+    return data
+
+
+def readFile(base0, base1, base2, base3):
+
+    base0_Data = readTxt(base0)
+    base1_Data = readTxt(base1)
+    base2_Data = readTxt(base2)
+    base3_Data = readTxt(base3)
+
+    return base0_Data , base1_Data , base2_Data , base3_Data
+
+def readFile(cam0x, cam0y, cam1x, cam1y):
+    cam0x_Data = readTxt(cam0x)
+    cam0y_Data = readTxt(cam0y)
+    cam1x_Data = readTxt(cam1x)
+    cam1y_Data = readTxt(cam1y)
+
+
+    return cam0x_Data, cam0y_Data, cam1x_Data, cam1y_Data
+
+if __name__ == '__main__':
+    filePath = 'E:'  # 文件夹路径
+    cam0x = filePath + '/cam0_x.txt'
+    cam0y = filePath + '/cam0_y.txt'
+    cam1x = filePath + '/cam1_x.txt'
+    cam1y = filePath + '/cam1_y.txt'
+    cam0x_Data , cam0y_Data , cam1x_Data , cam1y_Data = readFile(cam0x, cam0y, cam1x, cam1y)  # 读取文件数据
+
+    filePath1 = 'E:/1/'  # 文件夹路径
+    base0 = 'E:/1/cam0_x.txt'
+    base1 = 'E:/1/cam0_y.txt'
+    base2 = 'E:/1/cam1_x.txt'
+    base3 = 'E:/1/cam1_y.txt'
+    base0_Data , base1_Data , base2_Data , base3_Data = readFile(base0, base1, base2, base3)  # 读取文件数据
+
+
+    data0 = cam0x_Data - base0_Data
+    data1 = cam0y_Data - base1_Data
+    data2 = cam1x_Data - base2_Data
+    data3 = cam1y_Data - base3_Data
+   # np.savetxt('2.txt',data0,fmt='%f')
+
+
+    xmin = 0
+    xmax = 29
+    ymin = 0
+    ymax = 42
+    zmin = -0.02 # Z轴设置下限
+    zmax = 0.02# Z轴设置上限
+    x = numpy.arange(xmin, xmax, 1)
+    y = numpy.arange(ymin, ymax, 1)
+    X, Y = numpy.meshgrid(y, x)
+
+    fig = plt.figure(num=1)
+
+    ax0x = fig.add_subplot(221, projection='3d')
+    surf = ax0x.plot_surface(X, Y, data0, cmap='RdYlGn')  # cmap 随便输错，就可以根据错误提示换其他色谱
+    ax0x.set_title('cam0_x')  # 加标题
+    ax0x.set_zlim(zmin, zmax)  # 加Z轴约束
+
+    ax0y = fig.add_subplot(222, projection='3d')
+    surf = ax0y.plot_surface(X, Y, data1, cmap='RdYlGn')
+    ax0y.set_title('cam0_y')
+    ax0y.set_zlim(zmin, zmax)
+
+    ax1x = fig.add_subplot(223, projection='3d')
+    surf = ax1x.plot_surface(X, Y, data2, cmap='RdYlGn')
+    ax1x.set_title('cam1_x')
+    ax1x.set_zlim(zmin, zmax)
+
+    ax1y = fig.add_subplot(224, projection='3d')
+    surf = ax1y.plot_surface(X, Y, data3, cmap='RdYlGn')
+    ax1y.set_title('cam1_y')
+    ax1y.set_zlim(zmin, zmax)
+
+    manager = plt.get_current_fig_manager()  # 自动全屏
+    fig.savefig(filePath + '/矫正误差.png', dpi=600)  # 截图保存
+
+
+    fig = plt.figure(num=2)
+    zmin = -0.1 # Z轴设置下限
+    zmax = 0.1# Z轴设置上限
+
+    ax0x = fig.add_subplot(221, projection='3d')
+    surf = ax0x.plot_surface(X, Y, cam0x_Data, cmap='RdYlGn')  # cmap 随便输错，就可以根据错误提示换其他色谱
+    ax0x.set_title('cam0_x')  # 加标题
+    ax0x.set_zlim(zmin, zmax)  # 加Z轴约束
+
+    ax0y = fig.add_subplot(222, projection='3d')
+    surf = ax0y.plot_surface(X, Y, cam0y_Data, cmap='RdYlGn')
+    ax0y.set_title('cam0_y')
+    ax0y.set_zlim(zmin, zmax)
+
+    ax1x = fig.add_subplot(223, projection='3d')
+    surf = ax1x.plot_surface(X, Y, cam1x_Data, cmap='RdYlGn')
+    ax1x.set_title('cam1_x')
+    ax1x.set_zlim(zmin, zmax)
+
+    ax1y = fig.add_subplot(224, projection='3d')
+    surf = ax1y.plot_surface(X, Y, cam1y_Data, cmap='RdYlGn')
+    ax1y.set_title('cam1_y')
+    ax1y.set_zlim(zmin, zmax)
+
+    manager = plt.get_current_fig_manager()  # 自动全屏
+    fig.savefig(filePath + '/镜头畸变.png', dpi=600)  # 截图保存
+    plt.show()
