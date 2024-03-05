@@ -1,0 +1,80 @@
+from matplotlib import pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+import numpy, csv
+
+
+def readTxt(fileName):
+    data = numpy.zeros([29, 42]) # 暂时固定
+    with open(fileName, encoding='utf-8') as file:
+        reader = csv.reader(file)
+        i = 0
+        for row in reader:
+            temp_str = ''.join(('%s' % id for id in row))
+            temp = temp_str.split()
+            for j in range(0, len(temp)):
+                data[i][j] = float(temp[j])
+            i = i + 1
+    return data
+
+
+def readFile(cam0x, cam0y, cam1x, cam1y):
+    cam0x_Data = readTxt(cam0x)
+    cam0y_Data = readTxt(cam0y)
+    cam1x_Data = readTxt(cam1x)
+    cam1y_Data = readTxt(cam1y)
+    return cam0x_Data, cam0y_Data, cam1x_Data, cam1y_Data
+
+
+if __name__ == '__main__':
+    filePath = 'E:/' # 文件夹路径
+    cam0x = filePath + '/cam0_x.txt'
+    cam0y = filePath + '/cam0_y.txt'
+    cam1x = filePath + '/cam1_x.txt'
+    cam1y = filePath + '/cam1_y.txt'
+    cam0x_Data, cam0y_Data, cam1x_Data, cam1y_Data = readFile(cam0x, cam0y,cam1x, cam1y)    # 读取文件数据
+    #初始化设置
+    xmin = 0
+    xmax = 29
+    ymin = 0
+    ymax = 42
+    zmin = -4 # Z轴设置下限
+    zmax = 4  # Z轴设置上限
+    x = numpy.arange(xmin, xmax, 1)
+    y = numpy.arange(ymin, ymax, 1)
+    X, Y = numpy.meshgrid(y, x)
+
+    fig = plt.figure()
+
+
+    ax0x = fig.add_subplot(221,projection='3d')
+    surf = ax0x.plot_surface(X, Y, cam0x_Data, cmap='RdYlGn')   # cmap 随便输错，就可以根据错误提示换其他色谱
+    ax0x.set_title('cam0_x')    # 加标题
+    ax0x.set_zlim(zmin, zmax)   # 加Z轴约束
+
+    ax0y = fig.add_subplot(222,projection='3d')
+    surf = ax0y.plot_surface(X, Y, cam0y_Data, cmap='RdYlGn')
+    ax0y.set_title('cam0_y')
+    ax0y.set_zlim(zmin, zmax)
+
+    ax1x = fig.add_subplot(223,projection='3d')
+    surf = ax1x.plot_surface(X, Y, cam1x_Data, cmap='RdYlGn')
+    ax1x.set_title('cam1_x')
+    ax1x.set_zlim(zmin, zmax)
+
+    ax1y = fig.add_subplot(224,projection='3d')
+    surf = ax1y.plot_surface(X, Y, cam1y_Data, cmap='RdYlGn')
+    ax1y.set_title('cam1_y')
+    ax1y.set_zlim(zmin, zmax)
+
+    manager = plt.get_current_fig_manager()  # 自动全屏
+   # manager.window.showMaximized()
+    fig.savefig(filePath+'/export.png', dpi=600)    # 截图保存，但不是全屏，可以手动，或者查一下这个问题
+    plt.show()
+
+
+
+
+
+
+
+
