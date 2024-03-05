@@ -1,0 +1,60 @@
+import pyperclip
+from PyQt5.QtWidgets import *
+from PyQt5 import QtCore,QtGui,QtWidgets
+from PyQt5.QtCore import pyqtSignal
+import sys
+from mainFrame import Ui_MainWindow
+
+class mywindow(QtWidgets.QMainWindow,Ui_MainWindow):
+    sendAddDeviceName = pyqtSignal()
+    def __init__(self):
+        super(mywindow,self).__init__()
+        self.setupUi(self)
+        self.init()
+
+    def init(self):
+        self.pushButton.clicked.connect(self.setcode)
+
+    def setcode(self):
+        # self.lineEdit
+        code = self.lineEdit.text()
+        newCode = self.calcode(code)
+        self.plainTextEdit.setPlainText(newCode)
+
+    def calcode(self, code):
+    # for 循环遍历code的每一个字母
+        sum = 0
+        x=0
+        for a in code:
+            a=a.upper()
+            b=ord(a)
+            dec = int(b)
+            sum+=dec
+            continue
+        if sum==0:
+            sum=sum
+        else:
+            sum=sum-58
+        if sum < 256:
+            x = (256-sum)
+        else:
+            x =256-((sum - 256) % 256)
+        if hex(x)[-2] == 'x':
+            print("转换为十六进制为：{}{}".format(0, hex(x)[-1].upper()))
+            pyperclip.copy(hex(x)[1:].upper())
+        else:
+            print("转换为十六进制为：{}{}".format(hex(x)[-2].upper(), hex(x)[-1].upper()))
+            pyperclip.copy(hex(x)[2:].upper())
+    # else:
+    #     print()
+        a= hex(x)[2:].upper()
+        pyperclip.copy(hex(x)[2:].upper())
+        return a
+
+if __name__ == "__main__":
+    # QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA)
+    app = QApplication(sys.argv)
+    window = mywindow()
+    window.show()
+    window.raise_()
+    sys.exit(app.exec_())
