@@ -1,0 +1,13 @@
+import cv2
+
+# 替换为你的图像文件路径
+image_path = 'template.png'
+
+# 读取图像
+image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+
+# 检查图像是否正确加载
+if image is None:
+    print(f"Error loading image at {image_path}")
+else:
+    print(f"Image loaded successfully. Shape: {image.shape}")
