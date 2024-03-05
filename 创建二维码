@@ -2,16 +2,16 @@ import pyqrcode
 import png
 from pyqrcode import QRCode
 
-# Text which is to be converted to QR code
-print("Enter text to convert")
+# 要转换为二维码的文本
+print("输入要转化的文字")
 s = input(": ")
-# Name of QR code png file
-print("Enter image name to save")
+# 输入图像名称
+print("输入图像名称")
 n = input(": ")
-# Adding extension as .pnf
+# 添加扩展名为.png
 d = n + ".png"
-# Creating QR code
+# 创建二维码
 url = pyqrcode.create(s)
-# Saving QR code as  a png file
+# 保存二维码为png文件
 url.show()
 url.png(d, scale=6)
