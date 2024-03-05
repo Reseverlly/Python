@@ -1,0 +1,71 @@
+
+import numpy as np
+from matplotlib import pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+import numpy, csv
+import pandas as pd
+
+if __name__ == '__main__':
+    data = pd.read_csv("Stage044.csv", encoding="utf-8")
+
+    df_array = np.array(data)  # 将pandas读取的数据转化为array
+    df_list = df_array.tolist()  # 将数组转化为list
+
+    #读取数据
+    row = data['ROW']
+    col = data['COL']
+    DisX = data['Epsilon XY']
+    DisY = data['Epsilon X Te']
+    DisZ = data['Epsilon Y Te']
+    DisE = data['Major Strain Te']
+    xmin = min(row)
+    xmax = max(row) + 1
+    ymin = min(col)
+    ymax = max(col) + 1
+
+    resultX = np.zeros([xmax, ymax])#绘制填充区域
+    resultY = np.zeros([xmax, ymax])
+    resultZ = np.zeros([xmax, ymax])
+    resultE = np.zeros([xmax, ymax])
+    for i in range(0, 8188):
+        resultX[int(data.values[i][0]), int(data.values[i][1])] = data.values[i][2]#按顺序填入程序
+    for i in range(0,8188):
+        resultY[int(data.values[i][0]), int(data.values[i][1])] = data.values[i][3]
+    for i in range(0,8188):
+        resultZ[int(data.values[i][0]), int(data.values[i][1])] = data.values[i][4]
+    for i in range(0,8188):
+        resultE[int(data.values[i][0]), int(data.values[i][1])] = data.values[i][5]
+
+    zmin = -0.01# Z轴设置下限
+    zmax = 0.01 # Z轴设置上限
+    x = numpy.arange(xmin, xmax, 1)
+    y = numpy.arange(ymin, ymax, 1)
+    X, Y = numpy.meshgrid(y, x)
+
+    fig = plt.figure()
+
+    ax0x = fig.add_subplot(221, projection='3d')
+    surf = ax0x.plot_surface(X, Y, resultX, cmap='RdYlGn')  # cmap 随便输错，就可以根据错误提示换其他色谱
+    ax0x.set_title('Epsilon XY')  # 加标题
+    ax0x.set_zlim(zmin, zmax)  # 加Z轴约束
+
+    ax0y = fig.add_subplot(222, projection='3d')
+    surf = ax0y.plot_surface(X, Y, resultY, cmap='RdYlGn')
+    ax0y.set_title('Epsilon X Te')
+    ax0y.set_zlim(zmin, zmax)
+
+    ax1x = fig.add_subplot(223, projection='3d')
+    surf = ax1x.plot_surface(X, Y, resultZ, cmap='RdYlGn')
+    ax1x.set_title('Epsilon Y Te')
+    ax1x.set_zlim(zmin, zmax)
+
+    ax1y = fig.add_subplot(224, projection='3d')
+    surf = ax1y.plot_surface(X, Y, resultE, cmap='RdYlGn')
+    ax1y.set_title('Major Strain Te')
+    ax1y.set_zlim(zmin, zmax)
+
+    manager = plt.get_current_fig_manager()  # 自动全屏
+   # manager.resize(*manager.window.showMaximized())
+    fig.savefig('E:\export.png', dpi=600)  # 截图保存，但不是全屏，可以手动，或者查一下这个问题
+    plt.show()
+
