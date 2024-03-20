@@ -1,0 +1,63 @@
+import sys
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QMessageBox
+from PyQt5.QtCore import Qt
+import time
+import os
+
+class FolderCleaner(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.initUI()
+
+    def initUI(self):
+        self.setWindowTitle('Folder Cleaner')
+        self.setGeometry(100, 100, 300, 150)
+
+        self.lbl_folder = QLabel('Folder Path:', self)
+        self.txt_folder = QLineEdit(self)
+        self.lbl_days = QLabel('Days Threshold:', self)
+        self.txt_days = QLineEdit(self)
+
+        self.btn_clean = QPushButton('Clean Folder', self)
+        self.btn_clean.clicked.connect(self.cleanFolder)
+
+        vbox = QVBoxLayout()
+        vbox.addWidget(self.lbl_folder)
+        vbox.addWidget(self.txt_folder)
+        vbox.addWidget(self.lbl_days)
+        vbox.addWidget(self.txt_days)
+        vbox.addWidget(self.btn_clean)
+
+        self.setLayout(vbox)
+
+    def cleanFolder(self):
+        folder_path = self.txt_folder.text()
+        days_threshold = int(self.txt_days.text())
+
+        if not os.path.exists(folder_path):
+            QMessageBox.critical(self, 'Error', 'Folder path does not exist.')
+            return
+
+        now = time.time()
+        threshold = days_threshold * 86400  # 一天的秒数
+
+        deleted_files = []
+        for root, dirs, files in os.walk(folder_path):
+            for file_name in files:
+                file_path = os.path.join(root, file_name)
+                last_modified = os.path.getmtime(file_path)
+                age = now - last_modified
+                if age > threshold:
+                    try:
+                        os.remove(file_path)
+                        deleted_files.append(file_path)
+                    except Exception as e:
+                        print(f"Error deleting {file_path}: {e}")
+
+        QMessageBox.information(self, 'Cleanup Complete', f'{len(deleted_files)} files deleted.')
+
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    cleaner = FolderCleaner()
+    cleaner.show()
+    sys.exit(app.exec_())
